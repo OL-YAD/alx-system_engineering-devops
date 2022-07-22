@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# printing with while loop
+# bash while loop
 
 x=0
 
-while [$x -lt 10 ]
+while [ $x -lt 10 ]
 do
   echo "Best School"
-  (( x++))
-  done
+  (( x++ ))
+done
