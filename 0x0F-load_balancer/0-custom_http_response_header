@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Configure custom Nginx response header to track HTTP requests to web servers
+sudo apt-get -y update
+sudo apt-get -y install nginx
+echo "Hellow World" > /var/www/html/index.html
+sed -i '/^\tserver_name.*/a \\trewrite ^/redirect_me https://www.holbertonschool.com/ permanent;' /etc/nginx/sites-available/default
+echo "Ceci n'est pas une page" > /var/www/html/custom_404.html
+sed -i '/^\tserver_name.*/a \\terror_page 404 /custom_404.html;\n\tlocation = /custom_404.html {\n\troot /var/www/html/;\n\tinternal;\n\t}' /etc/nginx/sites-available/default
+sed -i '/^http {.*/a \\tadd_header X-Served-By '"${HOSTNAME}"';' /etc/nginx/nginx.conf
+sed -i '/^server {.*/a \\tadd_header X-Served-By '"${HOSTNAME}"';' /etc/nginx/sites-available/default
+sudo service nginx restart
