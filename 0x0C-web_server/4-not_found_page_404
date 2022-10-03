@@ -1,34 +1,15 @@
 #!/usr/bin/env bash
-# Installs Nginx with the following configurations:
-#+    Listens on port 80.
-#+    Returns a page containing "Holberton School" when queried
-#+     at the root with a curl GET request.
-# Configures /redirect_me as a "301 Moved Permanently".
-# Includes a custom 404 page containing "Ceci n'est pas une page".
+# Configure your Nginx server to have a custom 404 page
 
-apt-get update
-apt-get install -y nginx
+sudo apt-get -y install nginx
+# 1 Return a page with 'Hello World' text
+sudo bash -c 'echo "Hello World!" > /var/www/html/index.nginx-debian.html'
 
-mkdir /etc/nginx/html
-touch /etc/nginx/html/index.html
-echo "Hello World!" > /etc/nginx/html/index.html
-touch /etc/nginx/html/404.html
-echo "Ceci n'est pas une page" > /etc/nginx/html/404.html
+# redirects /redirect_me to another page
+redirect="\n\tlocation /redirect_me {\n\t\treturn 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;\n\t}\n"
+sudo sed -i "53s|.*|$redirect|" /etc/nginx/sites-enabled/default
 
-printf %s "server {
-    listen 80;
-    listen [::]:80 default_server;
-    root   /etc/nginx/html;
-    index  index.html index.htm;
-    location /redirect_me {
-        return 301 Moved Permanently;
-    }
-    error_page 404 /404.html;
-    location /404 {
-      root /etc/nginx/html;
-      internal;
-    }
-}
-" > /etc/nginx/sites-available/default
-
-service nginx restart
+# creates custom 404 html page contaning a string
+echo "Ceci n'est pas une page" | sudo tee /var/www/html/error404.html
+sudo sed -i "47s|.*| \n\terror_page 404 /error404.html;\n|" /etc/nginx/sites-enabled/default
+sudo /etc/init.d/nginx restart
